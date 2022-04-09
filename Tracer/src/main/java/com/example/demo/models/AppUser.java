@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "app_users")
-public class User {
+@Table(name = "app_user")
+public class AppUser {
 	@Id
 	@GeneratedValue
 	private int id;
@@ -73,7 +73,7 @@ public class User {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		AppUser other = (AppUser) obj;
 		return Objects.equals(email, other.email) && id == other.id && Objects.equals(password, other.password)
 				&& Objects.equals(username, other.username);
 	}
@@ -82,5 +82,4 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", username=" + username + "]";
 	}
-
 }

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.models.User;
+import com.example.demo.models.AppUser;
 import com.example.demo.repos.UserRepo;
 
 @Service
@@ -17,31 +17,33 @@ public class UserService {
 		this.userRepo = userRepo;
 	}
 	
-	public User findUserById(int id) {
-		Optional<User> u = userRepo.findById(id);
+	public AppUser findUserById(int id) {
+		Optional<AppUser> u = userRepo.findById(id);
 		if (u.isPresent()) {
 			return u.get();
 		}
 		return null;
 	}
 	
-	public User findUserByUsername(String username) {
+	public AppUser findUserByUsername(String username) {
 		return userRepo.findUserByUsername(username);
 	}
 	
-	public User findUserByEmail(String email) {
+	public AppUser findUserByEmail(String email) {
 		return userRepo.findUserByEmail(email);
 	}
 	
-	public User registerUser(User u) {
-		return null;
-	}
-	
-	public User updateUser(User u) {
+	public AppUser registerUser(AppUser u) {
+		if (findUserByUsername(u.getUsername())!=null) {
+			return null;
+		}
+		if (findUserByEmail(u.getEmail())!=null) {
+			return null;
+		}
 		return userRepo.save(u);
 	}
 	
-	public User loginUser(User u) {
-		return userRepo.findUserByUsernameAndPassword(u.getUsername(), u.getPassword());
+	public AppUser updateUser(AppUser u) {
+		return userRepo.save(u);
 	}
 }

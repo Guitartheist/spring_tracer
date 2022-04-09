@@ -1,30 +1,71 @@
 package com.example.demo.controllers;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.models.User;
+import com.example.demo.models.AppUser;
+import com.example.demo.services.AuthService;
 import com.example.demo.services.UserService;
+import com.example.demo.util.JwtTokenUtil;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
+	AuthenticationManager authenticationManager;
+	JwtTokenUtil jwtTokenUtil;
+	AuthService authService;
 	UserService userService;
+	PasswordEncoder passwordEncoder;
 	
-	public UserController(UserService userService) {
+	@Autowired
+	public UserController(AuthenticationManager authenticationManager,
+			UserService userService,
+			JwtTokenUtil jwtTokenUtil,
+			AuthService authService,
+			PasswordEncoder passwordEncoder) {
+		this.authenticationManager = authenticationManager;
 		this.userService = userService;
+		this.jwtTokenUtil = jwtTokenUtil;
+		this.authService = authService;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@PostMapping("/register")
-	public User register(User u) {
-		return u;
+	@ResponseBody
+	public AppUser register(@RequestBody AppUser u) {
+		u.setPassword( passwordEncoder.encode(u.getPassword()) );
+		return userService.registerUser(u);
 	}
 	
 	@PostMapping("/login")
-	public User login(User u) {
-		return u;
+	public ResponseEntity<AppUser> login(@RequestBody AppUser u) {
+		try {
+			Authentication authenticate = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(u.getUsername(), u.getPassword()));
+
+			User user = (User) authenticate.getPrincipal();
+			AppUser retUser = userService.findUserByUsername(user.getUsername());
+			retUser.setPassword(null);
+
+			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
+					.body(retUser);
+		} catch (BadCredentialsException ex) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 	}
 }
