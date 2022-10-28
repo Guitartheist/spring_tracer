@@ -45,10 +45,23 @@ public class UserController {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
-	@GetMapping("/{username}")
+	@GetMapping("/profile/{username}")
 	@ResponseBody
-	public AppUser getUser(@PathVariable("username") String username) {
-		return userService.findUserByUsername(username);
+	public AppUser getUser(@PathVariable("username") String username, Authentication auth) {
+		int authorizedID = (auth!=null) ? userService.findUserByUsername(auth.getName()).getId() : 0;
+		int requestedID = (userService.findUserByUsername(username)!=null) ? userService.findUserByUsername(username).getId() : -1;
+		
+		if (requestedID < 0)
+			return null;
+		
+		AppUser ret = userService.findUserByUsername(username);
+		
+		// Strip privileged info from user object if the requesting user should not be able to receive it
+		if (authorizedID!=requestedID) {
+			ret.setEmail("");
+		}
+		
+		return ret;
 	}
 	
 	@PostMapping("/register")
@@ -67,8 +80,10 @@ public class UserController {
 			User user = (User) authenticate.getPrincipal();
 			AppUser retUser = userService.findUserByUsername(user.getUsername());
 			retUser.setPassword(null);
-
-			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
+			
+			String token = jwtTokenUtil.generateAccessToken(user);
+		
+			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token)
 					.body(retUser);
 		} catch (BadCredentialsException ex) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
