@@ -68,7 +68,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         "/h2/**",
         "/user/login",
         "/user/register",
-        "/user/profile/**"
+        "/user/profile/**",
+        "/image/*"
       )
       .permitAll()
       .anyRequest()

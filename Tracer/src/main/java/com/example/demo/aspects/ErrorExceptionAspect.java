@@ -1,4 +1,4 @@
-package com.examples.demo.aspects;
+package com.example.demo.aspects;
 
 public class ErrorExceptionAspect {
 
