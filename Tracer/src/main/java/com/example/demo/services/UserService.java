@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ public class UserService {
 	@Autowired
 	public UserService(UserRepo userRepo) {
 		this.userRepo = userRepo;
+	}
+	
+	public ArrayList<AppUser> findAllUsers() {
+		return (ArrayList<AppUser>) userRepo.findAll();
 	}
 	
 	public AppUser findUserById(int id) {

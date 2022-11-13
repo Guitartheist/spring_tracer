@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +48,16 @@ public class UserController {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
+	@GetMapping("/all")
+	@ResponseBody
+	public ArrayList<String> getAllUsers() {
+		ArrayList<String> usernames = new ArrayList<>();
+		for (AppUser u:userService.findAllUsers()) {
+			usernames.add(u.getUsername());
+		}
+		return usernames;
+	}
+	
 	@GetMapping("/profile/{username}")
 	@ResponseBody
 	public AppUser getUser(@PathVariable("username") String username, Authentication auth) {
@@ -54,7 +67,7 @@ public class UserController {
 		if (requestedID < 0)
 			return null;
 		
-		AppUser ret = userService.findUserByUsername(username);
+		AppUser ret = userService.findUserById(requestedID);
 		
 		// Strip privileged info from user object if the requesting user should not be able to receive it
 		if (authorizedID!=requestedID) {
@@ -62,6 +75,44 @@ public class UserController {
 		}
 		
 		return ret;
+	}
+	
+	@PutMapping("/profile")
+	@ResponseBody
+	public AppUser updateUser(@RequestBody AppUser u, Authentication auth) {
+		int authorizedID = (auth!=null) ? userService.findUserByUsername(auth.getName()).getId() : 0;
+		int requestedID = (userService.findUserByUsername(u.getUsername())!=null) ? userService.findUserByUsername(u.getUsername()).getId() : -1;
+		
+		if (requestedID < 1)
+			return null;
+		
+		AppUser ret = userService.findUserById(requestedID);
+		
+		// Do nothing if the editing user is not authorized to make this edit
+		if (authorizedID!=requestedID) {
+			return null;
+		}
+		// Update user information
+		else {
+			// If user isn't changing their password, don't overwrite their password with a blank string
+			if (u.getPassword().length() < 1 ) {
+				u.setPassword(ret.getPassword());
+			}
+			// If the user is changing their password, apply the encoder
+			else {
+				u.setPassword( passwordEncoder.encode( u.getPassword()) );
+			}
+			// Same for the rest of their info, if it's blank or not provided, don't overwrite it
+			if (u.getUsername().length() < 1) {
+				u.setUsername(ret.getUsername());
+			}
+			if (u.getEmail().length() < 1) {
+				u.setEmail(ret.getEmail());
+			}
+			u.setId(requestedID);
+		}
+		
+		return userService.updateUser(u);
 	}
 	
 	@PostMapping("/register")
