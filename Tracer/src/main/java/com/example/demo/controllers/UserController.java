@@ -58,6 +58,16 @@ public class UserController {
 		return usernames;
 	}
 	
+	@GetMapping("/{pageNo}/{pageSize}")
+	public ArrayList<String> getPaginatedUsers(@PathVariable int pageNo, 
+            @PathVariable int pageSize) {
+		ArrayList<String> usernames = new ArrayList<>();
+		for (AppUser u:userService.findPaginated(pageNo, pageSize)) {
+			usernames.add(u.getUsername());
+		}
+		return usernames;
+	}
+	
 	@GetMapping("/profile/{username}")
 	@ResponseBody
 	public AppUser getUser(@PathVariable("username") String username, Authentication auth) {
