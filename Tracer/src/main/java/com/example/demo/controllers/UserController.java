@@ -119,6 +119,10 @@ public class UserController {
 			if (u.getEmail().length() < 1) {
 				u.setEmail(ret.getEmail());
 			}
+			// Don't overwrite profile image with a blank, if a profile image was passed, base 64 encode it
+			if (u.getProfileImage().length() < 1) {
+				u.setProfileImage(ret.getProfileImage());
+			}
 			u.setId(requestedID);
 		}
 		

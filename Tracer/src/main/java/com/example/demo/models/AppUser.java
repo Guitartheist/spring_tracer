@@ -25,6 +25,8 @@ public class AppUser {
 	String username;
 	@Column(nullable = false)
 	String password;
+	@Column(nullable = true, length=5000000)
+	String profileImage;
 
 	public int getId() {
 		return id;
@@ -58,6 +60,14 @@ public class AppUser {
 	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	@Override
