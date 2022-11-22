@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 
+import org.springframework.core.env.Environment;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,7 +27,7 @@ public class AppUser {
 	String username;
 	@Column(nullable = false)
 	String password;
-	@Column(nullable = true, length=5000000)
+	@Column(nullable = true, length= 5000000 )
 	String profileImage;
 
 	public int getId() {
