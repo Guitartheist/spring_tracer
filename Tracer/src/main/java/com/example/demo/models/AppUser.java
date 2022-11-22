@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 
-import org.springframework.core.env.Environment;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,6 +27,8 @@ public class AppUser {
 	String password;
 	@Column(nullable = true, length= 5000000 )
 	String profileImage;
+	@Column(nullable = true, length= 1000000 )
+	String profilePreviewImage;
 
 	public int getId() {
 		return id;
@@ -72,9 +72,19 @@ public class AppUser {
 		this.profileImage = profileImage;
 	}
 
+	public String getProfilePreviewImage() {
+		return profilePreviewImage;
+	}
+
+	public void setProfilePreviewImage(String profilePreviewImage) {
+		this.profilePreviewImage = profilePreviewImage;
+	}
+
+	
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, id, password, username);
+		return Objects.hash(email, id, password, profileImage, profilePreviewImage, username);
 	}
 
 	@Override
@@ -87,6 +97,8 @@ public class AppUser {
 			return false;
 		AppUser other = (AppUser) obj;
 		return Objects.equals(email, other.email) && id == other.id && Objects.equals(password, other.password)
+				&& Objects.equals(profileImage, other.profileImage)
+				&& Objects.equals(profilePreviewImage, other.profilePreviewImage)
 				&& Objects.equals(username, other.username);
 	}
 

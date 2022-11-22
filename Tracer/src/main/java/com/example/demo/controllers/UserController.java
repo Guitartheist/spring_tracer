@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dtos.AppUserListEntry;
 import com.example.demo.models.AppUser;
 import com.example.demo.services.AuthService;
 import com.example.demo.services.UserService;
@@ -50,22 +51,22 @@ public class UserController {
 	
 	@GetMapping("/all")
 	@ResponseBody
-	public ArrayList<String> getAllUsers() {
-		ArrayList<String> usernames = new ArrayList<>();
+	public ArrayList<AppUserListEntry> getAllUsers() {
+		ArrayList<AppUserListEntry> users = new ArrayList<>();
 		for (AppUser u:userService.findAllUsers()) {
-			usernames.add(u.getUsername());
+			users.add(new AppUserListEntry(u.getUsername(), u.getProfilePreviewImage()));
 		}
-		return usernames;
+		return users;
 	}
 	
 	@GetMapping("/{pageNo}/{pageSize}")
-	public ArrayList<String> getPaginatedUsers(@PathVariable int pageNo, 
+	public ArrayList<AppUserListEntry> getPaginatedUsers(@PathVariable int pageNo, 
             @PathVariable int pageSize) {
-		ArrayList<String> usernames = new ArrayList<>();
+		ArrayList<AppUserListEntry> users = new ArrayList<>();
 		for (AppUser u:userService.findPaginated(pageNo, pageSize)) {
-			usernames.add(u.getUsername());
+			users.add(new AppUserListEntry(u.getUsername(), u.getProfilePreviewImage()));
 		}
-		return usernames;
+		return users;
 	}
 	
 	@GetMapping("/profile/{username}")

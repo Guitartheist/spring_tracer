@@ -2,12 +2,10 @@ package com.example.demo.services;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,17 +70,20 @@ public class UserService {
 		if (findUserByEmail(u.getEmail())!=null) {
 			return null;
 		}
-		if (u.getProfileImage()!=null && u.getProfileImage().length()>0)
-			u.setProfileImage(squareAndResizeImageString(u.getProfileImage()));
+		if (u.getProfileImage()!=null && u.getProfileImage().length()>0) {
+			u.setProfileImage(squareAndResizeImageString(u.getProfileImage(), imageLength));
+			u.setProfilePreviewImage(squareAndResizeImageString(u.getProfileImage(), imagePreviewLength));
+		}
 		return userRepo.save(u);
 	}
 	
 	public AppUser updateUser(AppUser u) {
-		u.setProfileImage(squareAndResizeImageString(u.getProfileImage()));
+		u.setProfileImage(squareAndResizeImageString(u.getProfileImage(), imageLength));
+		u.setProfilePreviewImage(squareAndResizeImageString(u.getProfileImage(), imagePreviewLength));
 		return userRepo.save(u);
 	}
 	
-	public String squareAndResizeImageString(String inputImageString) {
+	public String squareAndResizeImageString(String inputImageString, int squareSide) {
 		StringBuilder r = new StringBuilder("data:image/png;base64,");
 		String outputImageString = "";
 		int skipAfter = inputImageString.indexOf("base64,") + 7;
@@ -90,28 +91,27 @@ public class UserService {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			BufferedImage inputImage = ImageIO.read(inputStream);
-			BufferedImage outputImage = new BufferedImage(imageLength, imageLength, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+			BufferedImage outputImage = new BufferedImage(squareSide, squareSide, java.awt.image.BufferedImage.TYPE_INT_ARGB);
 			int inputWidth = inputImage.getWidth();
 			int inputHeight = inputImage.getHeight();
 			int xOffset = 0;
 			int yOffset = 0;
 			Graphics2D g;
 			if (inputHeight==inputWidth) {
-				inputHeight = imageLength;
-				inputWidth = imageLength;
+				inputHeight = squareSide;
+				inputWidth = squareSide;
 			}
 			else if (inputWidth>inputHeight) {
-				inputHeight = (int) (imageLength * ((double) inputHeight/inputWidth));
-				inputWidth = imageLength;
+				inputHeight = (int) (squareSide * ((double) inputHeight/inputWidth));
+				inputWidth = squareSide;
 				yOffset = (inputWidth - inputHeight) / 2;
 			}
 			else if (inputHeight>inputWidth) {
-				inputWidth = (int) (imageLength  * ((double) inputWidth/inputHeight));
-				inputHeight = imageLength;
+				inputWidth = (int) (squareSide  * ((double) inputWidth/inputHeight));
+				inputHeight = squareSide;
 				xOffset = (inputHeight - inputWidth) / 2;
 			}
 			g = outputImage.createGraphics();
-			System.out.println(xOffset + " " + yOffset + " " + inputWidth + " " + inputHeight);
 			g.drawImage(inputImage, xOffset, yOffset, inputWidth, inputHeight, null);
 			g.dispose();
 			ImageIO.write(outputImage, "png", outputStream);
