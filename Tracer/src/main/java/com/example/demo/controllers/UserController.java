@@ -49,6 +49,24 @@ public class UserController {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
+	@GetMapping("/token")
+	@ResponseBody
+	public AppUser getUsernameFromToken(Authentication auth) {
+		if (auth!=null && auth.isAuthenticated()) {
+			AppUser u = new AppUser();
+			u.setEmail("");
+			u.setUsername(auth.getName());
+			return u;
+		}
+		return null;
+	}
+	
+	@GetMapping("/logout")
+	@ResponseBody
+	public void logoutUser(Authentication auth) {
+		
+	}
+	
 	@GetMapping("/all")
 	@ResponseBody
 	public ArrayList<AppUserListEntry> getAllUsers() {
