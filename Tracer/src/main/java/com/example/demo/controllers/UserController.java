@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,8 +64,14 @@ public class UserController {
 	
 	@GetMapping("/logout")
 	@ResponseBody
-	public void logoutUser(Authentication auth) {
-		
+	public void logoutUser(@RequestHeader HttpHeaders headers, Authentication auth) {
+		String token = headers.getFirst("authorization");
+		if (token == null)
+			return;
+		else {
+			token = token.split(" ")[1].trim();
+			jwtTokenUtil.logout(token);
+		}
 	}
 	
 	@GetMapping("/all")
