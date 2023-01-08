@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exceptions.EmailAlreadyRegisteredException;
+import com.example.demo.exceptions.UsernameAlreadyRegisteredException;
 import com.example.demo.models.AppUser;
 import com.example.demo.repos.UserRepo;
 import com.example.demo.util.ImageUtil;
@@ -58,12 +60,12 @@ public class UserService {
 		return userRepo.findUserByEmail(email);
 	}
 	
-	public AppUser registerUser(AppUser u) {
+	public AppUser registerUser(AppUser u) throws UsernameAlreadyRegisteredException, EmailAlreadyRegisteredException {
 		if (findUserByUsername(u.getUsername())!=null) {
-			return null;
+			throw new UsernameAlreadyRegisteredException(u.getUsername());
 		}
 		if (findUserByEmail(u.getEmail())!=null) {
-			return null;
+			throw new EmailAlreadyRegisteredException(u.getEmail());
 		}
 		if (u.getProfileImage()!=null && u.getProfileImage().length()>0) {
 			u.setProfileImage(imageUtil.squareAndResizeImageString(u.getProfileImage(), imageLength));
