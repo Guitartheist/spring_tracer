@@ -24,7 +24,13 @@ public class JwtTokenUtil {
 	}
 	
 	public void logout(String token) {
-		loggedOutTokens.get(getUsername(token)).add(token);
+		if (loggedOutTokens.containsKey(getUsername(token))) {
+			loggedOutTokens.get(getUsername(token)).add(token);
+		}
+		else {
+			loggedOutTokens.put(getUsername(token),new ArrayList<String>());
+			loggedOutTokens.get(getUsername(token)).add(token);
+		}
 	}
 
 	public String generateAccessToken(User user) {
@@ -48,11 +54,13 @@ public class JwtTokenUtil {
 	}
 	
 	public void purgeExpired(String user) {
-		for (String token:loggedOutTokens.get(user)) {
-			try {
-				Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);	
-			} catch (ExpiredJwtException ex) {
-				loggedOutTokens.get(user).remove(token);
+		if (loggedOutTokens.containsKey(user)) {
+			for (String token:loggedOutTokens.get(user)) {
+				try {
+					Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);	
+				} catch (ExpiredJwtException ex) {
+					loggedOutTokens.get(user).remove(token);
+				}
 			}
 		}
 	}
@@ -60,7 +68,7 @@ public class JwtTokenUtil {
 	public boolean validate(String token) {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-			if (loggedOutTokens.get(getUsername(token)).contains(token)) {
+			if (loggedOutTokens.containsKey(getUsername(token)) && loggedOutTokens.get(getUsername(token)).contains(token)) {
 				System.err.println("Logged out JWT");
 				return false;
 			}
