@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dtos.AppUserListEntry;
+import com.example.demo.exceptions.EmailAlreadyRegisteredException;
+import com.example.demo.exceptions.UsernameAlreadyRegisteredException;
 import com.example.demo.models.AppUser;
 import com.example.demo.services.AuthService;
 import com.example.demo.services.UserService;
@@ -157,27 +159,23 @@ public class UserController {
 	
 	@PostMapping("/register")
 	@ResponseBody
-	public AppUser register(@RequestBody AppUser u) {
+	public AppUser register(@RequestBody AppUser u) throws UsernameAlreadyRegisteredException, EmailAlreadyRegisteredException {
 		u.setPassword( passwordEncoder.encode(u.getPassword()) );
 		return userService.registerUser(u);
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<AppUser> login(@RequestBody AppUser u) {
-		try {
-			Authentication authenticate = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(u.getUsername(), u.getPassword()));
+	public ResponseEntity<AppUser> login(@RequestBody AppUser u) throws BadCredentialsException {
+		Authentication authenticate = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(u.getUsername(), u.getPassword()));
 
-			User user = (User) authenticate.getPrincipal();
-			AppUser retUser = userService.findUserByUsername(user.getUsername());
-			retUser.setPassword(null);
-			
-			String token = jwtTokenUtil.generateAccessToken(user);
+		User user = (User) authenticate.getPrincipal();
+		AppUser retUser = userService.findUserByUsername(user.getUsername());
+		retUser.setPassword(null);
 		
-			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token)
-					.body(retUser);
-		} catch (BadCredentialsException ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+		String token = jwtTokenUtil.generateAccessToken(user);
+	
+		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token)
+				.body(retUser);
 	}
 }
