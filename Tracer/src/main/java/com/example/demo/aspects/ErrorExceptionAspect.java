@@ -1,4 +1,4 @@
-package com.examples.demo.aspects;
+package com.example.demo.aspects;
 
 import java.util.ArrayList;
 import java.util.List;

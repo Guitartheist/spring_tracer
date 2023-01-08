@@ -1,4 +1,4 @@
-package com.examples.demo.aspects;
+package com.example.demo.aspects;
 
 import java.util.Arrays;
 
@@ -24,9 +24,10 @@ public class LoggingAspect {
     public void springBeanPointcut() {
     }
 
-    @Pointcut("within(net.guides.springboot2.springboot2jpacrudexample..*)" +
-        " || within(net.guides.springboot2.springboot2jpacrudexample.service..*)" +
-        " || within(net.guides.springboot2.springboot2jpacrudexample.controller..*)")
+    @Pointcut("within(com.example.demo..*)" +
+        " || within(com.example.demo.service..*)" +
+        " || within(com.example.demo.controller..*)" +
+        " || within(com.example.demo.util.ImageUtil)")
     public void applicationPackagePointcut() {
     }
 
