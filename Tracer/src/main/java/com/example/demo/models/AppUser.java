@@ -25,6 +25,10 @@ public class AppUser {
 	String username;
 	@Column(nullable = false)
 	String password;
+	@Column(nullable = true, length= 5000000 )
+	String profileImage;
+	@Column(nullable = true, length= 1000000 )
+	String profilePreviewImage;
 
 	public int getId() {
 		return id;
@@ -60,9 +64,27 @@ public class AppUser {
 		this.password = password;
 	}
 
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+
+	public String getProfilePreviewImage() {
+		return profilePreviewImage;
+	}
+
+	public void setProfilePreviewImage(String profilePreviewImage) {
+		this.profilePreviewImage = profilePreviewImage;
+	}
+
+	
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, id, password, username);
+		return Objects.hash(email, id, password, profileImage, profilePreviewImage, username);
 	}
 
 	@Override
@@ -75,6 +97,8 @@ public class AppUser {
 			return false;
 		AppUser other = (AppUser) obj;
 		return Objects.equals(email, other.email) && id == other.id && Objects.equals(password, other.password)
+				&& Objects.equals(profileImage, other.profileImage)
+				&& Objects.equals(profilePreviewImage, other.profilePreviewImage)
 				&& Objects.equals(username, other.username);
 	}
 
