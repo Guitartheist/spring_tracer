@@ -69,7 +69,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         "/user/login",
         "/user/register",
         "/user/profile/**",
-        "/image/*"
+        "/image/*",
+        "/product/*",
+        "/product/data/**",
+        "/cart/**"
       )
       .permitAll()
       .anyRequest()
