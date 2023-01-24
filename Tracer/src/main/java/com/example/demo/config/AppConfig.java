@@ -27,6 +27,7 @@ public class AppConfig {
     config.setAllowedOrigins(allowedOrigins);
     ArrayList<String> exposedHeaders = new ArrayList<String>();
     exposedHeaders.add("Authorization");
+    exposedHeaders.add("noAccountCartID");
     config.setExposedHeaders(exposedHeaders);
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");

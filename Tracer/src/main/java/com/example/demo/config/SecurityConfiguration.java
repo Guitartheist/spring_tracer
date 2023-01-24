@@ -66,10 +66,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       // Public endpoints
       .antMatchers(
         "/h2/**",
+        "/user/**"
         "/user/login",
         "/user/register",
         "/user/profile/**",
-        "/image/*"
+        "/image/*",
+        "/product/*",
+        "/product/data/**",
+        "/cart/**"
       )
       .permitAll()
       .anyRequest()
