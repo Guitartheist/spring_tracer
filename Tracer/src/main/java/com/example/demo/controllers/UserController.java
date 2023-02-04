@@ -66,14 +66,15 @@ public class UserController {
 	
 	@GetMapping("/logout")
 	@ResponseBody
-	public void logoutUser(@RequestHeader HttpHeaders headers, Authentication auth) {
+	public String logoutUser(@RequestHeader HttpHeaders headers, Authentication auth) {
 		String token = headers.getFirst("authorization");
 		if (token == null)
-			return;
+			return "User was not logged in";
 		else {
 			token = token.split(" ")[1].trim();
 			jwtTokenUtil.logout(token);
 		}
+		return "Logged out";
 	}
 	
 	@GetMapping("/all")
