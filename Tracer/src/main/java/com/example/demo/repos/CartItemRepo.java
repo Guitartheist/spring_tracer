@@ -9,10 +9,8 @@ import com.example.demo.models.CartItem;
 
 @Repository
 public interface CartItemRepo extends CrudRepository<CartItem, Integer> {
-	CartItem[] findCartByUserId(int userId);
-	CartItem[] findCartByCartId(UUID cartId);
-	//CartItem findCartItemByCartItemId(int cart_item_id);
+	CartItem[] findCartItemsByUserId(int userId);
+	CartItem[] findCartItemsByCartId(UUID cartId);
 
-	CartItem[] deleteCartByCartId(UUID cartId); 
-	//CartItem deleteCartItemByCartItemId(int cart_item_id);	
+	CartItem[] deleteCartItemsByCartId(UUID cartId); 
 }
