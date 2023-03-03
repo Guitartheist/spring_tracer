@@ -157,12 +157,12 @@ public class CartController {
 	public ResponseEntity<CartTransferObject> createCartItem(
 		@RequestBody CartItem createdCartItem
 	) {
-		if (createdCartItem.getCartId() == null) {				// no cart id
+		UUID cartIdFromItem = createdCartItem.getCartId();
+		if (cartIdFromItem == null) {				// no cart id
 			int userId = createdCartItem.getUserId();
 			if (userId == -1) {									// user not logged in
 				UUID createdCartId = UUID.randomUUID();
 				createdCartItem.setCartId(createdCartId);
-				String[] priceArray = createdCartItem.getPrice().split(".");
 				cartService.saveCart(new Cart(createdCartId));
 			} else {
 				UUID cartId = cartService.findCartIdByUserId(createdCartItem.getUserId()); //  try to find cartId by userId
@@ -172,11 +172,10 @@ public class CartController {
 				else {
 					UUID createdCartId = UUID.randomUUID();
 					createdCartItem.setCartId(createdCartId);
-					String[] priceArray = createdCartItem.getPrice().split("\n");	
 					cartService.saveCart(new Cart(userId, createdCartId));
 				}
 			}
-		}
+		}		
 		try {
 			CartItem cartItem = cartService.createCartItem(createdCartItem); // save cart item
 			// update cart price

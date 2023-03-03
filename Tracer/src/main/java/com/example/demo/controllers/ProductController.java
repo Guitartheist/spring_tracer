@@ -43,7 +43,7 @@ public class ProductController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer P1P5s3FpRJrMZRSC7flDyBwEbTWdS600fzcU3WVh");
+		headers.set("Authorization", "Bearer ");
 		
 		JsonObject data = Json.createObjectBuilder()
 			.add("recipient", Json.createObjectBuilder()
@@ -119,7 +119,7 @@ public class ProductController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization", "Bearer P1P5s3FpRJrMZRSC7flDyBwEbTWdS600fzcU3WVh");
+		headers.set("Authorization", "Bearer ");
 		HttpEntity<Void> request = new HttpEntity<>(headers);
 
 		ResponseEntity<ResponseObject> response = restTemplate.exchange(url, HttpMethod.GET, request, ResponseObject.class);		
